@@ -10,7 +10,7 @@ use windows::{
     Win32::{
         Foundation::{HWND, LPARAM, TRUE, WPARAM},
         Graphics::{
-            Dwm::{DWMWA_CLOAKED, DwmGetWindowAttribute},
+            Dwm::{DWMWA_CLOAKED, DwmGetWindowAttribute, DwmSetWindowAttribute, DWMWINDOWATTRIBUTE},
             Gdi::{
                 BI_RGB, BITMAP, BITMAPINFO, BITMAPINFOHEADER, DIB_RGB_COLORS, DeleteObject, GetDC,
                 GetDIBits, GetObjectW, ReleaseDC,
@@ -225,6 +225,23 @@ pub fn set_self_capture_visibility(hwnd: u32, exclude: bool) {
     let affinity = if exclude { WDA_EXCLUDEFROMCAPTURE } else { WDA_NONE };
     unsafe {
         let _ = SetWindowDisplayAffinity(hwnd, affinity);
+    }
+}
+
+/// Remove the 1-pixel DWM accent border that Windows draws on decoration-less
+/// popup windows.  Silently no-ops on Windows 10 (attribute added in Win 11).
+pub fn remove_dwm_border(hwnd: u32) {
+    // DWMWA_BORDER_COLOR = 34, DWMWA_COLOR_NONE = 0xFFFFFFFE
+    const DWMWA_BORDER_COLOR: DWMWINDOWATTRIBUTE = DWMWINDOWATTRIBUTE(34);
+    const COLOR_NONE: u32 = 0xFFFFFFFE;
+    let hwnd = HWND(hwnd as *mut _);
+    unsafe {
+        let _ = DwmSetWindowAttribute(
+            hwnd,
+            DWMWA_BORDER_COLOR,
+            &COLOR_NONE as *const u32 as *const _,
+            std::mem::size_of::<u32>() as u32,
+        );
     }
 }
 

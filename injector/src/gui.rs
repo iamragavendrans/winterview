@@ -108,6 +108,10 @@ struct Gui {
     capture_excluded: bool,
     /// Keep the window floating above all other windows.
     always_on_top: bool,
+    /// Set to true by the tray Quit action so the close interceptor lets it through.
+    quit_requested: bool,
+    /// Last known on-screen position; restored when the window is un-hidden.
+    saved_pos: Option<egui::Pos2>,
 }
 
 impl Gui {
@@ -169,10 +173,9 @@ impl Gui {
             }
         });
 
+        // Capture is NOT started here — it is deferred to the first update() frame
+        // after self-exclusion is applied, so Winterview never appears in its own preview.
         let monitors = Monitor::enumerate().unwrap_or_default();
-        if !monitors.is_empty() {
-            let _ = capture_event_send.send(CaptureWorkerEvent::Capture(monitors[0]));
-        }
 
         // Build tray menu.
         let tray_menu = Menu::new();
@@ -212,6 +215,8 @@ impl Gui {
             self_hwnd: None,
             capture_excluded: true,   // excluded from capture by default
             always_on_top: false,
+            quit_requested: false,
+            saved_pos: None,
         }
     }
 
@@ -308,8 +313,12 @@ impl Gui {
 
     fn set_window_visible(&mut self, ctx: &egui::Context, visible: bool) {
         self.window_visible = visible;
-        ctx.send_viewport_cmd(ViewportCommand::Visible(visible));
         if visible {
+            // Restore to the last known on-screen position (saved each frame).
+            // If this is the very first show, let the OS keep whatever default it chose.
+            if let Some(pos) = self.saved_pos {
+                ctx.send_viewport_cmd(ViewportCommand::OuterPosition(pos));
+            }
             ctx.send_viewport_cmd(ViewportCommand::Minimized(false));
             ctx.send_viewport_cmd(ViewportCommand::Focus);
             if self.show_desktop_preview && !self.monitors.is_empty() {
@@ -319,6 +328,10 @@ impl Gui {
             }
             let _ = self.event_sender.send(InjectorWorkerEvent::Update);
         } else {
+            // Move off-screen instead of Visible(false).
+            // Visible(false) stops the wgpu surface from ticking, which means
+            // update() is never called and tray events are never polled.
+            ctx.send_viewport_cmd(ViewportCommand::OuterPosition(egui::pos2(-32000.0, -32000.0)));
             let _ = self.capture_event_send.send(CaptureWorkerEvent::StopCapture);
         }
     }
@@ -364,6 +377,9 @@ impl Gui {
                 if let Some(hwnd) = self.self_hwnd {
                     native::set_self_capture_visibility(hwnd, false);
                 }
+                // Flag that this is a real quit so the close interceptor doesn't
+                // redirect it to hide-to-tray (the default for the OS close button).
+                self.quit_requested = true;
                 ctx.send_viewport_cmd(ViewportCommand::Close);
             }
         }
@@ -376,10 +392,20 @@ impl eframe::App for Gui {
         ctx.request_repaint_after(std::time::Duration::from_millis(100));
 
         // Close button -> hide to tray instead.
+        // Exception: if quit was requested from the tray menu, let the close through.
         if ctx.input(|i| i.viewport().close_requested()) {
-            ctx.send_viewport_cmd(ViewportCommand::CancelClose);
-            self.set_window_visible(ctx, false);
+            if !self.quit_requested {
+                ctx.send_viewport_cmd(ViewportCommand::CancelClose);
+                self.set_window_visible(ctx, false);
+            }
             return;
+        }
+
+        // Track the on-screen position so we can restore it after an off-screen hide.
+        if self.window_visible {
+            if let Some(rect) = ctx.input(|i| i.viewport().outer_rect) {
+                self.saved_pos = Some(rect.min);
+            }
         }
 
         // Minimize (Win+D, taskbar button) -> hide to tray instead.
@@ -464,8 +490,17 @@ impl eframe::App for Gui {
                 .find(|w| w.pid == self.self_pid)
             {
                 self.self_hwnd = Some(w.hwnd);
-                // Apply immediately — never let a single frame through unprotected.
+                // Exclude from capture BEFORE the first preview frame is taken.
                 native::set_self_capture_visibility(w.hwnd, true);
+                // Remove the 1-px DWM accent border on the decoration-less window.
+                native::remove_dwm_border(w.hwnd);
+                // Now it is safe to start the preview capture — Winterview is already
+                // excluded, so it will never appear in its own preview.
+                if self.show_desktop_preview && self.window_visible && !self.monitors.is_empty() {
+                    let _ = self.capture_event_send.send(CaptureWorkerEvent::Capture(
+                        self.monitors[self.active_monitor],
+                    ));
+                }
             }
         }
 
