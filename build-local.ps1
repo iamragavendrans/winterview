@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Local build script for Invisiwind Enhanced.
-    Produces Invisiwind.exe, utils.dll, utils32.dll and optionally the installer.
+    Local build script for Winterview Enhanced.
+    Produces Winterview.exe, utils.dll, utils32.dll and optionally the installer.
 
 .PARAMETER Installer
-    If set, also builds InvisiwindEnhancedInstaller.exe using InnoSetup.
+    If set, also builds WinterviewEnhancedInstaller.exe using InnoSetup.
     Requires InnoSetup 6 to be installed (https://jrsoftware.org/isdl.php).
 
 .PARAMETER Clean
@@ -76,7 +76,7 @@ Ok "utils32.dll built"
 
 # ── Build 64-bit executable + DLL ────────────────────────────────────────────
 
-Step "Building Invisiwind.exe + utils.dll (64-bit)"
+Step "Building Winterview.exe + utils.dll (64-bit)"
 cargo build --release
 if ($LASTEXITCODE -ne 0) { Fail "x64 build failed" }
 Ok "x64 build complete"
@@ -88,7 +88,7 @@ $dist = "$root\dist"
 if (Test-Path $dist) { Remove-Item $dist -Recurse -Force }
 New-Item -ItemType Directory $dist | Out-Null
 
-Copy-Item "$root\target\release\Invisiwind.exe"                          $dist
+Copy-Item "$root\target\release\Winterview.exe"                          $dist
 Copy-Item "$root\target\release\utils.dll"                               $dist
 Copy-Item "$root\target\i686-pc-windows-msvc\release\utils32.dll"        $dist
 Copy-Item "$root\hide.ahk"                                               $dist
@@ -99,11 +99,11 @@ Get-ChildItem $dist | ForEach-Object { Write-Host "    $_" }
 # ── Portable zip ─────────────────────────────────────────────────────────────
 
 Step "Creating portable zip bundle"
-$zipPath = "$root\InvisiwindEnhanced.zip"
+$zipPath = "$root\WinterviewEnhanced.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath }
-$toZip = @("$dist\Invisiwind.exe","$dist\utils.dll","$dist\utils32.dll","$dist\hide.ahk")
+$toZip = @("$dist\Winterview.exe","$dist\utils.dll","$dist\utils32.dll","$dist\hide.ahk")
 Compress-Archive -Path $toZip -DestinationPath $zipPath
-Ok "InvisiwindEnhanced.zip created"
+Ok "WinterviewEnhanced.zip created"
 
 # ── Installer (optional) ──────────────────────────────────────────────────────
 
@@ -124,7 +124,7 @@ if ($Installer) {
     & $iscc "$root\Misc\inno.iss"
     if ($LASTEXITCODE -ne 0) { Fail "InnoSetup build failed" }
 
-    $installerOut = "$root\Misc\Output\InvisiwindEnhancedInstaller.exe"
+    $installerOut = "$root\Misc\Output\WinterviewEnhancedInstaller.exe"
     if (Test-Path $installerOut) {
         Ok "Installer: $installerOut"
     } else {
@@ -137,11 +137,11 @@ if ($Installer) {
 Write-Host ""
 Write-Host "Build complete!" -ForegroundColor Green
 Write-Host ""
-Write-Host "  Portable zip : $root\InvisiwindEnhanced.zip"
-Write-Host "  Run directly : $dist\Invisiwind.exe"
+Write-Host "  Portable zip : $root\WinterviewEnhanced.zip"
+Write-Host "  Run directly : $dist\Winterview.exe"
 if ($Installer) {
-    Write-Host "  Installer    : $root\Misc\Output\InvisiwindEnhancedInstaller.exe"
+    Write-Host "  Installer    : $root\Misc\Output\WinterviewEnhancedInstaller.exe"
 }
 Write-Host ""
-Write-Host "Note: If antivirus flags Invisiwind.exe or utils.dll, add an exclusion" -ForegroundColor Yellow
+Write-Host "Note: If antivirus flags Winterview.exe or utils.dll, add an exclusion" -ForegroundColor Yellow
 Write-Host "for the dist\ folder. DLL injection is a known false-positive trigger."  -ForegroundColor Yellow

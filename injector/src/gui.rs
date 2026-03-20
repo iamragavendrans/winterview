@@ -176,7 +176,7 @@ impl Gui {
 
         // Build tray menu.
         let tray_menu = Menu::new();
-        let item_show = MenuItem::new("Show Invisiwind", true, None);
+        let item_show = MenuItem::new("Show Winterview", true, None);
         let item_restore_all = MenuItem::new("Restore all hidden windows", true, None);
         let item_quit = MenuItem::new("Quit", true, None);
         let tray_menu_ids = TrayMenuIds {
@@ -310,6 +310,7 @@ impl Gui {
         self.window_visible = visible;
         ctx.send_viewport_cmd(ViewportCommand::Visible(visible));
         if visible {
+            ctx.send_viewport_cmd(ViewportCommand::Minimized(false));
             ctx.send_viewport_cmd(ViewportCommand::Focus);
             if self.show_desktop_preview && !self.monitors.is_empty() {
                 let _ = self.capture_event_send.send(CaptureWorkerEvent::Capture(
@@ -334,9 +335,9 @@ impl Gui {
     fn update_tray_tooltip(&self) {
         let n = self.hidden_stack.len();
         let tip = if n == 0 {
-            "Invisiwind — no windows hidden".to_string()
+            "Winterview — no windows hidden".to_string()
         } else {
-            format!("Invisiwind — {} window{} hidden", n, if n == 1 { "" } else { "s" })
+            format!("Winterview — {} window{} hidden", n, if n == 1 { "" } else { "s" })
         };
         let _ = self._tray_icon.set_tooltip(Some(tip));
     }
@@ -377,6 +378,50 @@ impl eframe::App for Gui {
         // Close button -> hide to tray instead.
         if ctx.input(|i| i.viewport().close_requested()) {
             ctx.send_viewport_cmd(ViewportCommand::CancelClose);
+            self.set_window_visible(ctx, false);
+            return;
+        }
+
+        // Minimize (Win+D, taskbar button) -> hide to tray instead.
+        // Without this the window becomes unreachable because with_taskbar(false)
+        // leaves no way to restore a minimized window, and the ghost frame border
+        // remains visible while dragging other windows over that area.
+        if ctx.input(|i| i.viewport().minimized == Some(true)) {
+            ctx.send_viewport_cmd(ViewportCommand::Minimized(false));
+            self.set_window_visible(ctx, false);
+            return;
+        }
+
+        // Custom title bar: draggable strip + hide-to-tray button.
+        // The window is decorationless (no OS title bar/border), so this panel
+        // is the only way to drag the window and provides the close affordance.
+        let mut hide_to_tray = false;
+        egui::TopBottomPanel::top("wv_titlebar").show(ctx, |ui| {
+            let drag = ui.interact(
+                ui.max_rect(),
+                egui::Id::new("wv_drag"),
+                egui::Sense::click_and_drag(),
+            );
+            if drag.drag_started() {
+                ctx.send_viewport_cmd(ViewportCommand::StartDrag);
+            }
+            ui.horizontal(|ui| {
+                ui.vertical(|ui| {
+                    ui.label(RichText::new("Winterview").strong().size(13.0));
+                    ui.label(
+                        RichText::new("Screen sharing without oversharing.")
+                            .weak()
+                            .size(10.0),
+                    );
+                });
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    if ui.small_button("✕").on_hover_text("Hide to tray").clicked() {
+                        hide_to_tray = true;
+                    }
+                });
+            });
+        });
+        if hide_to_tray {
             self.set_window_visible(ctx, false);
             return;
         }
@@ -495,7 +540,7 @@ impl eframe::App for Gui {
 
                             // Always remove hidden windows from taskbar + Alt+Tab so
                             // they can't appear in screen share switch thumbnails.
-                            // Invisiwind itself is exempt — it needs tray access.
+                            // Winterview itself is exempt — it needs tray access.
                             let hide_from_taskbar = if is_self { None } else { Some(window_info.hidden) };
 
                             // Keep hidden_stack in sync with checkbox changes.
@@ -574,7 +619,7 @@ impl eframe::App for Gui {
 
 fn load_tray_icon_image() -> Option<tray_icon::Icon> {
     let img = ImageReader::with_format(
-        Cursor::new(include_bytes!("../../Misc/invicon.ico")),
+        Cursor::new(include_bytes!("../../Misc/winterview.ico")),
         ImageFormat::Ico,
     )
     .decode()
@@ -586,7 +631,7 @@ fn load_tray_icon_image() -> Option<tray_icon::Icon> {
 
 fn build_tray_icon(menu: Menu) -> TrayIcon {
     let mut builder = TrayIconBuilder::new()
-        .with_tooltip("Invisiwind")
+        .with_tooltip("Winterview")
         .with_menu(Box::new(menu));
     if let Some(icon) = load_tray_icon_image() {
         builder = builder.with_icon(icon);
@@ -598,13 +643,14 @@ pub fn start(hotkey_recv: Receiver<HotkeyEvent>) {
     let mut options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([320.0, 540.0])
-            .with_taskbar(false),   // tray-only: no taskbar button, no Alt+Tab entry
+            .with_taskbar(false)    // tray-only: no taskbar button, no Alt+Tab entry
+            .with_decorations(false),
         renderer: Renderer::Wgpu,
         ..Default::default()
     };
 
     if let Ok(d_image) = ImageReader::with_format(
-        Cursor::new(include_bytes!("../../Misc/invicon.ico")),
+        Cursor::new(include_bytes!("../../Misc/winterview.ico")),
         ImageFormat::Ico,
     )
     .decode()
@@ -618,7 +664,7 @@ pub fn start(hotkey_recv: Receiver<HotkeyEvent>) {
     }
 
     eframe::run_native(
-        "Invisiwind",
+        "Winterview",
         options,
         Box::new(move |cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);

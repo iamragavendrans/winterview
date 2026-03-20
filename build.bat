@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
-title Invisiwind Enhanced — Build
+title Winterview Enhanced — Build
 
 echo ============================================================
-echo  Invisiwind Enhanced — local build script
+echo  Winterview Enhanced — local build script
 echo ============================================================
 echo.
 
@@ -44,14 +44,14 @@ echo     OK: utils32.dll
 
 :: ── Build 64-bit main executable + 64-bit DLL ──────────────────────────────
 echo.
-echo [3/4] Building 64-bit Invisiwind.exe + utils.dll...
+echo [3/4] Building 64-bit Winterview.exe + utils.dll...
 cargo build --release
 if errorlevel 1 (
     echo ERROR: 64-bit build failed.
     pause
     exit /b 1
 )
-echo     OK: Invisiwind.exe
+echo     OK: Winterview.exe
 echo     OK: utils.dll
 
 :: ── Assemble portable zip ───────────────────────────────────────────────────
@@ -59,7 +59,7 @@ echo.
 echo [4/4] Creating portable zip bundle...
 
 if not exist "dist" mkdir dist
-copy /Y "target\release\Invisiwind.exe"                           "dist\Invisiwind.exe"  >nul
+copy /Y "target\release\Winterview.exe"                           "dist\Winterview.exe"  >nul
 copy /Y "target\release\utils.dll"                                "dist\utils.dll"       >nul
 copy /Y "target\i686-pc-windows-msvc\release\utils32.dll"         "dist\utils32.dll"     >nul
 
@@ -67,8 +67,8 @@ where 7z >nul 2>&1
 if errorlevel 1 (
     echo WARN: 7-Zip not found — skipping zip. Files are in the dist\ folder.
 ) else (
-    7z a -tzip InvisiwindEnhanced.zip ".\hide.ahk" ".\dist\*.dll" ".\dist\*.exe" >nul
-    echo     OK: InvisiwindEnhanced.zip
+    7z a -tzip WinterviewEnhanced.zip ".\hide.ahk" ".\dist\*.dll" ".\dist\*.exe" >nul
+    echo     OK: WinterviewEnhanced.zip
 )
 
 :: ── Optional: build installer with InnoSetup ───────────────────────────────
@@ -79,12 +79,12 @@ if errorlevel 1 (
     echo       Download from https://jrsoftware.org/isdl.php to build the .exe installer.
 ) else (
     echo.
-    echo Building InvisiwindEnhancedInstaller.exe...
+    echo Building WinterviewEnhancedInstaller.exe...
     iscc ".\Misc\inno.iss"
     if errorlevel 1 (
         echo WARN: Installer build failed, but portable zip is ready.
     ) else (
-        echo     OK: Misc\Output\InvisiwindEnhancedInstaller.exe
+        echo     OK: Misc\Output\WinterviewEnhancedInstaller.exe
     )
 )
 
@@ -93,15 +93,15 @@ echo.
 echo ============================================================
 echo  Build complete. Output files:
 echo.
-echo  Portable:   InvisiwindEnhanced.zip
-echo              (extract anywhere, run Invisiwind.exe)
+echo  Portable:   WinterviewEnhanced.zip
+echo              (extract anywhere, run Winterview.exe)
 echo.
-if exist "Misc\Output\InvisiwindEnhancedInstaller.exe" (
-    echo  Installer:  Misc\Output\InvisiwindEnhancedInstaller.exe
+if exist "Misc\Output\WinterviewEnhancedInstaller.exe" (
+    echo  Installer:  Misc\Output\WinterviewEnhancedInstaller.exe
     echo              (run to install with Start Menu entry)
     echo.
 )
-echo  Raw files:  dist\Invisiwind.exe
+echo  Raw files:  dist\Winterview.exe
 echo              dist\utils.dll
 echo              dist\utils32.dll
 echo ============================================================

@@ -1,6 +1,6 @@
-# Invisiwind Enhanced
+# Winterview Enhanced
 
-Invisiwind Enhanced is a fork of [Invisiwind](https://github.com/radiantly/Invisiwind) — a tool that hides specific windows from screen capture while keeping them fully visible and usable on your own screen. This fork adds a system tray, global hotkeys, self-protection from capture, and taskbar hiding for all hidden windows.
+Winterview Enhanced is a fork of [Winterview](https://github.com/radiantly/Winterview) — a tool that hides specific windows from screen capture while keeping them fully visible and usable on your own screen. This fork adds a system tray, global hotkeys, self-protection from capture, and taskbar hiding for all hidden windows.
 
 ## What does it do?
 
@@ -23,9 +23,9 @@ The tool uses DLL injection to call [`SetWindowDisplayAffinity`](https://docs.mi
 ## What's new in this fork
 
 ### System tray
-Invisiwind lives in the system tray. The taskbar button is gone — click the tray icon to open the panel, right-click for the menu. This means you can never lose access to Invisiwind even if you hide it from screen capture.
+Winterview lives in the system tray. The taskbar button is gone — click the tray icon to open the panel, right-click for the menu. This means you can never lose access to Winterview even if you hide it from screen capture.
 
-![Invisiwind UI](Misc/screenshot-light.png)
+![Winterview UI](Misc/screenshot-light.png)
 
 ### Global hotkeys — browser-safe
 Built-in hotkeys that work even when your browser has focus. These deliberately avoid all Chrome/Edge shortcuts:
@@ -34,16 +34,16 @@ Built-in hotkeys that work even when your browser has focus. These deliberately 
 |---|---|
 | `Ctrl+Alt+H` | Hide the currently focused window |
 | `Ctrl+Alt+U` | Restore the last hidden window |
-| Tray icon click | Show / hide the Invisiwind panel |
+| Tray icon click | Show / hide the Winterview panel |
 
-### Invisiwind panel hidden from screen capture by default
-The Invisiwind control panel itself is excluded from screen capture on startup. Your interviewer or meeting attendees cannot see your hide/unhide activity. You can toggle this in Advanced Settings.
+### Winterview panel hidden from screen capture by default
+The Winterview control panel itself is excluded from screen capture on startup. Your interviewer or meeting attendees cannot see your hide/unhide activity. You can toggle this in Advanced Settings.
 
 ### Hidden windows removed from taskbar and Alt+Tab
 Every window you hide is also removed from the taskbar and Alt+Tab list. It won't appear as a thumbnail when someone watches you switch windows. The window is still on your screen and fully usable — just invisible to everything that could leak it.
 
 ### Self-protection
-Invisiwind can never accidentally remove itself from the taskbar or Alt+Tab. The tray icon is always accessible regardless of what settings are enabled.
+Winterview can never accidentally remove itself from the taskbar or Alt+Tab. The tray icon is always accessible regardless of what settings are enabled.
 
 ### Interview workflow
 1. Open your notes/reference material in a separate browser window (`Ctrl+N`, not `Ctrl+T`)
@@ -61,13 +61,13 @@ Invisiwind can never accidentally remove itself from the taskbar or Alt+Tab. The
 
 ### Installer (recommended)
 
-Download and run `InvisiwindEnhancedInstaller.exe` from the [latest release](../../releases/latest).
+Download and run `WinterviewEnhancedInstaller.exe` from the [latest release](../../releases/latest).
 
 The installer adds a Start Menu entry and an optional "start on Windows boot" checkbox.
 
 ### Portable zip
 
-Download `InvisiwindEnhanced.zip` from the [latest release](../../releases/latest), extract anywhere, and run `Invisiwind.exe`.
+Download `WinterviewEnhanced.zip` from the [latest release](../../releases/latest), extract anywhere, and run `Winterview.exe`.
 
 ---
 
@@ -107,7 +107,7 @@ No. Each window must be hidden individually. The hotkey (`Ctrl+Alt+H`) makes thi
 Yes — `Ctrl+Alt+H` hides the focused window globally. The tray icon in the corner shows how many windows are currently hidden.
 
 **Why does my antivirus flag this?**
-DLL injection triggers heuristic scanners regardless of intent. This is a known issue with the original Invisiwind as well. Add a folder exclusion in Windows Security, or submit a false positive report to your antivirus vendor.
+DLL injection triggers heuristic scanners regardless of intent. This is a known issue with the original Winterview as well. Add a folder exclusion in Windows Security, or submit a false positive report to your antivirus vendor.
 
 **What's the difference between portable and installer?**
 Both contain the same files. The installer adds a Start Menu entry, an optional desktop shortcut, and an optional startup entry. The portable zip requires no installation.
@@ -116,7 +116,7 @@ Both contain the same files. The installer adds a Start Menu entry, an optional 
 
 ## Credits
 
-Original Invisiwind by [radiantly](https://github.com/radiantly/Invisiwind). This fork adds tray support, global hotkeys, capture self-exclusion, and taskbar hiding.
+Original Winterview by [radiantly](https://github.com/radiantly/Winterview). This fork adds tray support, global hotkeys, capture self-exclusion, and taskbar hiding.
 
 ## License
 

@@ -1,4 +1,4 @@
-# Building & Shipping Invisiwind Enhanced
+# Building & Shipping Winterview Enhanced
 
 Two ways to get a distributable `.exe`. Pick whichever suits you.
 
@@ -20,8 +20,8 @@ Every version tag (`v2.1.0`, `v2.2.0` …) publishes a proper release.
    ```
 4. Go to **Actions** tab → watch the `Build & Release` workflow run (~5 min).
 5. Go to **Releases** → download either:
-   - `InvisiwindEnhanced.zip` — portable, extract and run
-   - `InvisiwindEnhancedInstaller.exe` — installer with Start Menu entry
+   - `WinterviewEnhanced.zip` — portable, extract and run
+   - `WinterviewEnhancedInstaller.exe` — installer with Start Menu entry
 
 The workflow handles everything: x86 + x64 DLLs, portable zip, InnoSetup installer, GitHub release upload.
 
@@ -47,16 +47,16 @@ build.bat
 That's it. The script handles all four steps:
 1. Adds the `i686-pc-windows-msvc` target for the 32-bit DLL
 2. Builds `utils32.dll` (injected into 32-bit apps like older Electron apps)
-3. Builds `Invisiwind.exe` + `utils.dll` (64-bit)
-4. Packages `InvisiwindEnhanced.zip` and optionally the installer
+3. Builds `Winterview.exe` + `utils.dll` (64-bit)
+4. Packages `WinterviewEnhanced.zip` and optionally the installer
 
 ### Output
 
 ```
-InvisiwindEnhanced.zip             ← send this to anyone
-Misc/Output/InvisiwindEnhancedInstaller.exe   ← or this
+WinterviewEnhanced.zip             ← send this to anyone
+Misc/Output/WinterviewEnhancedInstaller.exe   ← or this
 dist/
-  Invisiwind.exe
+  Winterview.exe
   utils.dll
   utils32.dll
 ```
@@ -66,7 +66,7 @@ dist/
 ## What to ship
 
 ### Portable (ZIP)
-Extract anywhere. No install needed. Run `Invisiwind.exe`.
+Extract anywhere. No install needed. Run `Winterview.exe`.
 Suitable for users who don't want an installer or work in restricted environments.
 
 ### Installer (.exe)
@@ -78,7 +78,7 @@ Suitable for everyday users.
 
 ## Antivirus false positives
 
-Invisiwind uses DLL injection to call `SetWindowDisplayAffinity` from within
+Winterview uses DLL injection to call `SetWindowDisplayAffinity` from within
 target processes. This is the only way the Windows API permits that call.
 As a result, most antivirus products will flag the build as a trojan or
 generic malware. This is a false positive.

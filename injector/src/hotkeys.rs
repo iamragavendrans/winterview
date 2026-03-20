@@ -17,7 +17,7 @@ use windows::Win32::{
 pub enum HotkeyEvent {
     /// Ctrl+Alt+H — hide whatever window currently has focus.
     /// Carries (hwnd, pid) captured at the moment the key was pressed,
-    /// before focus could shift to Invisiwind.
+    /// before focus could shift to Winterview.
     HideActive { hwnd: u32, pid: u32 },
 
     /// Ctrl+Alt+U — restore the most recently hidden window.
@@ -70,10 +70,10 @@ pub fn start(tx: Sender<HotkeyEvent>, self_pid: u32) {
                 match msg.wParam.0 as i32 {
                     ID_HIDE => {
                         // Capture the foreground window NOW, before the
-                        // Invisiwind window can steal focus.
+                        // Winterview window can steal focus.
                         let (hwnd, pid) = get_foreground();
                         if pid == 0 || pid == self_pid {
-                            // Don't hide Invisiwind itself via hotkey.
+                            // Don't hide Winterview itself via hotkey.
                             continue;
                         }
                         if tx.send(HotkeyEvent::HideActive { hwnd, pid }).is_err() {
