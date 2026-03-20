@@ -83,6 +83,8 @@ jobs:
     name: Package and Release
     needs: [build-payload-32, build-x64]
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
