@@ -59,7 +59,7 @@ pub fn start(tx: Sender<HotkeyEvent>, self_pid: u32) {
                 // Filtering to WM_HOTKEY..WM_HOTKEY keeps the thread asleep
                 // the rest of the time.
                 let result = unsafe {
-                    GetMessageW(&mut msg, HWND(std::ptr::null_mut()), WM_HOTKEY, WM_HOTKEY)
+                    GetMessageW(&mut msg, Some(HWND(std::ptr::null_mut())), WM_HOTKEY, WM_HOTKEY)
                 };
 
                 if result.0 <= 0 {

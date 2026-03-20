@@ -598,7 +598,7 @@ pub fn start(hotkey_recv: Receiver<HotkeyEvent>) {
     let mut options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([320.0, 540.0])
-            .with_skip_taskbar(true),   // tray-only: no taskbar button, no Alt+Tab entry
+            .with_taskbar(false),   // tray-only: no taskbar button, no Alt+Tab entry
         renderer: Renderer::Wgpu,
         ..Default::default()
     };
