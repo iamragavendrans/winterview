@@ -310,6 +310,7 @@ impl Gui {
         self.window_visible = visible;
         ctx.send_viewport_cmd(ViewportCommand::Visible(visible));
         if visible {
+            ctx.send_viewport_cmd(ViewportCommand::Minimized(false));
             ctx.send_viewport_cmd(ViewportCommand::Focus);
             if self.show_desktop_preview && !self.monitors.is_empty() {
                 let _ = self.capture_event_send.send(CaptureWorkerEvent::Capture(
@@ -377,6 +378,16 @@ impl eframe::App for Gui {
         // Close button -> hide to tray instead.
         if ctx.input(|i| i.viewport().close_requested()) {
             ctx.send_viewport_cmd(ViewportCommand::CancelClose);
+            self.set_window_visible(ctx, false);
+            return;
+        }
+
+        // Minimize (Win+D, taskbar button) -> hide to tray instead.
+        // Without this the window becomes unreachable because with_taskbar(false)
+        // leaves no way to restore a minimized window, and the ghost frame border
+        // remains visible while dragging other windows over that area.
+        if ctx.input(|i| i.viewport().minimized == Some(true)) {
+            ctx.send_viewport_cmd(ViewportCommand::Minimized(false));
             self.set_window_visible(ctx, false);
             return;
         }
