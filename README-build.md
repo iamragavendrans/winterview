@@ -1,4 +1,4 @@
-# Building Invisiwind Enhanced
+# Building Winterview Enhanced
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@
 ## Option A — Local build (PowerShell)
 
 ```powershell
-# Basic build (produces dist\ folder + InvisiwindEnhanced.zip)
+# Basic build (produces dist\ folder + WinterviewEnhanced.zip)
 .\build-local.ps1
 
 # Build + installer .exe
@@ -29,12 +29,12 @@ Output locations:
 
 | File | What it is |
 |---|---|
-| `dist\Invisiwind.exe` | Main application — run this directly for a portable install |
+| `dist\Winterview.exe` | Main application — run this directly for a portable install |
 | `dist\utils.dll` | 64-bit payload DLL (auto-injected, do not run manually) |
 | `dist\utils32.dll` | 32-bit payload DLL (for hiding 32-bit processes) |
 | `dist\hide.ahk` | Optional AutoHotkey script |
-| `InvisiwindEnhanced.zip` | Portable bundle of the above four files |
-| `Misc\Output\InvisiwindEnhancedInstaller.exe` | Full installer (only when `-Installer` flag used) |
+| `WinterviewEnhanced.zip` | Portable bundle of the above four files |
+| `Misc\Output\WinterviewEnhancedInstaller.exe` | Full installer (only when `-Installer` flag used) |
 
 ---
 
@@ -57,7 +57,7 @@ This triggers the tagged release job and creates a GitHub Release with the insta
 
 ## Antivirus false positives
 
-Invisiwind uses DLL injection (`CreateRemoteThread` + `LoadLibrary`) which most antivirus engines flag as malware behaviour. This is a well-known false positive for legitimate screen-capture tools.
+Winterview uses DLL injection (`CreateRemoteThread` + `LoadLibrary`) which most antivirus engines flag as malware behaviour. This is a well-known false positive for legitimate screen-capture tools.
 
 **If your build gets quarantined:**
 1. Add an exclusion for the `dist\` folder in Windows Defender.

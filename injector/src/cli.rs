@@ -7,9 +7,9 @@ use std::fmt::Display;
 use windows::Win32::System::Console::{ATTACH_PARENT_PROCESS, AttachConsole};
 
 #[derive(Parser, Debug)]
-#[command(name = "Invisiwind")]
+#[command(name = "Winterview")]
 #[command(version = env!("CARGO_PKG_VERSION"))]
-#[command(about = "Hide certain windows when sharing your screen")]
+#[command(about = "Screen sharing without oversharing.")]
 #[command(disable_help_flag = true)]
 struct Cli {
     #[arg(long, action = ArgAction::HelpLong, help = "Show command-line usage")]

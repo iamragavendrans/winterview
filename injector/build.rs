@@ -6,14 +6,14 @@ use {
 fn main() -> io::Result<()> {
     if env::var_os("CARGO_CFG_WINDOWS").is_some() {
         WindowsResource::new()
-            .set_icon("../Misc/invicon.ico")
+            .set_icon("../Misc/winterview.ico")
             .set_manifest(
                 r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
   <assemblyIdentity
     version="1.0.0.0"
     processorArchitecture="*"
-    name="Invisiwind"
+    name="Winterview"
     type="win32"
   />
   <dependency>

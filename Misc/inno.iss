@@ -1,8 +1,8 @@
-#define MyAppName "Invisiwind Enhanced"
+#define MyAppName "Winterview Enhanced"
 #define MyAppVersion "2.1.0"
 #define MyAppPublisher "Radiantly (enhanced fork)"
-#define MyAppURL "https://github.com/radiantly/Invisiwind"
-#define MyAppExeName "Invisiwind.exe"
+#define MyAppURL "https://github.com/radiantly/Winterview"
+#define MyAppExeName "Winterview.exe"
 
 [Setup]
 AppId={{A7F82C1E-3D56-4E89-B012-8C3D7A94F501}
@@ -20,7 +20,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 PrivilegesRequiredOverridesAllowed=dialog
-OutputBaseFilename=InvisiwindEnhancedInstaller
+OutputBaseFilename=WinterviewEnhancedInstaller
 OutputDir=Output
 WizardStyle=modern
 ; Allow running without UAC prompt if user chooses
@@ -31,11 +31,11 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon";    Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "startupentry";   Description: "Start Invisiwind when Windows starts"; GroupDescription: "Startup:"; Flags: unchecked
+Name: "startupentry";   Description: "Start Winterview when Windows starts"; GroupDescription: "Startup:"; Flags: unchecked
 
 [Files]
 ; Main executable
-Source: "..\dist\Invisiwind.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\Winterview.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; 64-bit payload DLL (injected into target processes)
 Source: "..\dist\utils.dll";      DestDir: "{app}"; Flags: ignoreversion
@@ -53,7 +53,7 @@ Name: "{autodesktop}\{#MyAppName}";  Filename: "{app}\{#MyAppExeName}"; Tasks: d
 [Registry]
 ; Run on startup (only installed if user ticks the task checkbox)
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; \
-  ValueType: string; ValueName: "InvisiwindEnhanced"; \
+  ValueType: string; ValueName: "WinterviewEnhanced"; \
   ValueData: """{app}\{#MyAppExeName}"""; \
   Flags: uninsdeletevalue; Tasks: startupentry
 
@@ -64,7 +64,7 @@ Filename: "{app}\{#MyAppExeName}"; \
 
 [UninstallRun]
 ; Gracefully exit the running instance before uninstall removes files
-Filename: "taskkill.exe"; Parameters: "/F /IM {#MyAppExeName}"; Flags: runhidden; RunOnceId: "KillInvisiwind"
+Filename: "taskkill.exe"; Parameters: "/F /IM {#MyAppExeName}"; Flags: runhidden; RunOnceId: "KillWinterview"
 
 [Messages]
-WelcomeLabel2=This will install [name/ver] on your computer.%n%nInvisiwind Enhanced hides windows from screen capture (e.g. during Zoom or Teams calls) while keeping them fully usable.%n%nNote: your antivirus may flag this as a false positive due to DLL injection. This is expected.
+WelcomeLabel2=This will install [name/ver] on your computer.%n%nWinterview Enhanced hides windows from screen capture (e.g. during Zoom or Teams calls) while keeping them fully usable.%n%nNote: your antivirus may flag this as a false positive due to DLL injection. This is expected.
